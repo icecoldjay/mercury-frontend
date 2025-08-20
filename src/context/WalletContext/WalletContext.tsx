@@ -8,7 +8,7 @@ import {
   useSwitchChain 
 } from 'wagmi';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { WalletState, WalletContextType, WalletProviderProps, WalletError } from '../../types/wallet';
+import { WalletContextType, WalletProviderProps, WalletError } from '../../types/wallet';
 import { blockdagStage } from '../../config/wagmi';
 
 const WALLET_DOWNLOADS: { [key: string]: string } = {
@@ -26,25 +26,8 @@ const WALLET_ID_MAPPING: { [key: string]: string } = {
 // Extend Window interface for wallet providers
 declare global {
   interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: any[] }) => Promise<any>;
-      on: (event: string, callback: (...args: any[]) => void) => void;
-      removeListener: (event: string, callback: (...args: any[]) => void) => void;
-      isMetaMask?: boolean;
-      isTrust?: boolean;
-      providers?: Array<{
-        isMetaMask?: boolean;
-        isTrust?: boolean;
-        request: (args: { method: string; params?: any[] }) => Promise<any>;
-      }>;
-    };
-    trustwallet?: {
-      ethereum?: {
-        request: (args: { method: string; params?: any[] }) => Promise<any>;
-        isTrust?: boolean;
-      };
-      isTrust?: boolean;
-    };
+    ethereum?: any;
+    trustwallet?: any;
   }
 }
 
@@ -58,7 +41,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   // Wagmi hooks
   const { address, isConnected, connector } = useAccount();
-  const { connect: wagmiConnect, connectors, error: wagmiError, isPending: isConnectPending } = useConnect({
+  const { connect: wagmiConnect, connectors, isPending: isConnectPending } = useConnect({
     mutation: {
       onSuccess: () => {
         setConnectionError(null);
@@ -83,7 +66,6 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   useEffect(() => {
     const savedAddress = localStorage.getItem('walletAddress');
     const savedNetwork = localStorage.getItem('walletNetwork');
-    const savedBalance = localStorage.getItem('walletBalance');
     const savedWalletType = localStorage.getItem('walletType');
     
     if (savedAddress && savedNetwork && savedWalletType && !isConnected) {
@@ -149,7 +131,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
         
         // Force MetaMask to be the primary provider
         if (window.ethereum.providers) {
-          const metamaskProvider = window.ethereum.providers.find(p => p.isMetaMask && !p.isTrust);
+          const metamaskProvider = window.ethereum.providers.find((p: any) => p.isMetaMask && !p.isTrust);
           if (metamaskProvider) {
             window.ethereum = metamaskProvider;
           }
@@ -259,7 +241,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   const value: WalletContextType = {
     isConnected,
-    address,
+    address: address || null,
     balance: balanceData?.formatted || null,
     network: getNetworkName(),
     walletType: connector?.id || null,

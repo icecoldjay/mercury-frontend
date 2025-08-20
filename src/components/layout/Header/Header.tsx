@@ -16,7 +16,6 @@ const Header: React.FC = () => {
     openConnectModal, 
     closeConnectModal,
     connect,
-    error,
     isConnecting,
     getDownloadUrl,
     switchToBlockDAG

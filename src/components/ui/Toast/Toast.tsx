@@ -16,7 +16,6 @@ const Toast: React.FC<ToastProps> = ({
   duration = 4000,
 }) => {
   const [opacity, setOpacity] = useState(1);
-  const [timeLeft, setTimeLeft] = useState(duration);
 
   useEffect(() => {
     if (isVisible && duration > 0) {
@@ -35,7 +34,6 @@ const Toast: React.FC<ToastProps> = ({
         // Calculate opacity based on remaining time
         const opacityValue = Math.max(0.3, remaining / duration);
         setOpacity(opacityValue);
-        setTimeLeft(remaining);
 
         requestAnimationFrame(updateOpacity);
       };
@@ -51,7 +49,6 @@ const Toast: React.FC<ToastProps> = ({
   useEffect(() => {
     if (isVisible) {
       setOpacity(1);
-      setTimeLeft(duration);
     }
   }, [isVisible, duration]);
 
